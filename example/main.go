@@ -65,7 +65,7 @@ func (c *dummyCacher) DeleteKeysWithPrefix(ctx context.Context, keyPrefix string
 
 func main() {
 	db, _ := gorm.Open(
-		mysql.Open("DNS"),
+		mysql.Open("DATABASE_DSN"),
 		&gorm.Config{},
 	)
 	db = db.Debug()
@@ -74,7 +74,6 @@ func main() {
 		CacheTTL:   5 * time.Minute,
 		InstanceId: "ACD12",
 		Serializer: caches.JSONSerializer{},
-		Easer:      true,
 	}}
 
 	_ = db.Use(cachesPlugin)
