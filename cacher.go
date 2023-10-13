@@ -7,7 +7,7 @@ import (
 
 type Cacher interface {
 	Get(ctx context.Context, key string) ([]byte, error)
-	Store(ctx context.Context, key string, val []byte, ttl time.Duration) error
-	DeleteKey(ctx context.Context, key string) error
-	DeleteKeysWithPrefix(ctx context.Context, keyPrefix string) error
+	Set(ctx context.Context, key string, val []byte, ttl time.Duration) error
+	Delete(ctx context.Context, key string) error
+	DeleteWithPrefix(ctx context.Context, keyPrefix string) error
 }

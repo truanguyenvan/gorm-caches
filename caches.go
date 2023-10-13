@@ -106,7 +106,7 @@ func (c *Caches) AfterUpdate(db *gorm.DB) {
 		// evict cache by detail
 		go func() {
 			prefixKey := GenCacheKey(c.Conf.InstanceId, tableName, primaryKey)
-			if err := c.Conf.Cacher.DeleteKeysWithPrefix(ctx, prefixKey); err != nil {
+			if err := c.Conf.Cacher.DeleteWithPrefix(ctx, prefixKey); err != nil {
 				db.Logger.Error(ctx, "[AfterUpdate - Delete with key %s] %s", prefixKey, err)
 			}
 		}()
@@ -115,7 +115,7 @@ func (c *Caches) AfterUpdate(db *gorm.DB) {
 	// evict cache by list
 	go func() {
 		prefixKey := GenCacheKey(c.Conf.InstanceId, tableName, LIST_KEY)
-		if err := c.Conf.Cacher.DeleteKeysWithPrefix(ctx, prefixKey); err != nil {
+		if err := c.Conf.Cacher.DeleteWithPrefix(ctx, prefixKey); err != nil {
 			db.Logger.Error(ctx, "[AfterUpdate - Delete with prefix %s] %s", prefixKey, err)
 		}
 	}()
@@ -138,7 +138,7 @@ func (c *Caches) AfterCreate(db *gorm.DB) {
 	// evict cache by list
 	go func() {
 		prefixKey := GenCacheKey(c.Conf.InstanceId, tableName, LIST_KEY)
-		if err := c.Conf.Cacher.DeleteKeysWithPrefix(ctx, prefixKey); err != nil {
+		if err := c.Conf.Cacher.DeleteWithPrefix(ctx, prefixKey); err != nil {
 			db.Logger.Error(ctx, "[AfterUpdate - Delete with prefix %s] %s", prefixKey, err)
 		}
 	}()
@@ -222,7 +222,7 @@ func (c *Caches) storeInCache(db *gorm.DB, identifier string) {
 		return
 	}
 
-	if err := c.Conf.Cacher.Store(ctx, identifier, cachedData, c.Conf.CacheTTL); err != nil {
+	if err := c.Conf.Cacher.Set(ctx, identifier, cachedData, c.Conf.CacheTTL); err != nil {
 		db.Logger.Error(ctx, "[storeInCache - Store] %s", err)
 	}
 }
