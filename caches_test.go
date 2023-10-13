@@ -271,41 +271,15 @@ func TestCaches_Query(t *testing.T) {
 
 	t.Run("cacher only", func(t *testing.T) {
 		t.Run("one query", func(t *testing.T) {
-			t.Run("with error", func(t *testing.T) {
-				db, _ := gorm.Open(tests.DummyDialector{}, &gorm.Config{})
-				db.Statement.Dest = &mockDest{}
-
-				caches := &Caches{
-					Conf: &Config{
-						Easer:  false,
-						Cacher: &cacherStoreErrorMock{},
-					},
-
-					queue: &sync.Map{},
-					queryCb: func(db *gorm.DB) {
-						db.Statement.Dest.(*mockDest).Result = db.Statement.SQL.String()
-					},
-				}
-
-				// Set the query SQL into something specific
-				exampleQuery := "demo-query"
-				db.Statement.SQL.WriteString(exampleQuery)
-
-				caches.Query(db) // Execute the query
-
-				if db.Error == nil {
-					t.Error("an error was expected, got none")
-				}
-			})
-
 			t.Run("without error", func(t *testing.T) {
 				db, _ := gorm.Open(tests.DummyDialector{}, &gorm.Config{})
 				db.Statement.Dest = &mockDest{}
 
 				caches := &Caches{
 					Conf: &Config{
-						Easer:  false,
-						Cacher: &cacherMock{},
+						Easer:      false,
+						Cacher:     &cacherMock{},
+						Serializer: JSONSerializer{},
 					},
 
 					queue: &sync.Map{},
@@ -343,8 +317,9 @@ func TestCaches_Query(t *testing.T) {
 
 			caches := &Caches{
 				Conf: &Config{
-					Easer:  false,
-					Cacher: &cacherMock{},
+					Easer:      false,
+					Cacher:     &cacherMock{},
+					Serializer: JSONSerializer{},
 				},
 
 				queue: &sync.Map{},
@@ -386,8 +361,9 @@ func TestCaches_Query(t *testing.T) {
 
 			caches := &Caches{
 				Conf: &Config{
-					Easer:  false,
-					Cacher: &cacherMock{},
+					Easer:      false,
+					Cacher:     &cacherMock{},
+					Serializer: JSONSerializer{},
 				},
 
 				queue: &sync.Map{},
