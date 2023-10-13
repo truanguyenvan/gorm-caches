@@ -1,6 +1,8 @@
 package caches
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Query struct {
 	Dest         interface{}

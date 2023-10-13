@@ -1,8 +1,10 @@
 package caches
 
 import (
+	"context"
 	"errors"
 	"sync"
+	"time"
 )
 
 type cacherMock struct {
@@ -15,19 +17,29 @@ func (c *cacherMock) init() {
 	}
 }
 
-func (c *cacherMock) Get(key string) *Query {
+func (c *cacherMock) Get(ctx context.Context, key string) ([]byte, error) {
 	c.init()
 	val, ok := c.store.Load(key)
 	if !ok {
-		return nil
+		return nil, nil
 	}
 
-	return val.(*Query)
+	return val.([]byte), nil
 }
 
-func (c *cacherMock) Store(key string, val *Query) error {
+func (c *cacherMock) Store(ctx context.Context, key string, val []byte, ttl time.Duration) error {
 	c.init()
 	c.store.Store(key, val)
+	return nil
+}
+
+func (c *cacherMock) DeleteKey(ctx context.Context, key string) error {
+	c.init()
+	c.store.Delete(key)
+	return nil
+}
+
+func (c *cacherMock) DeleteKeysWithPrefix(ctx context.Context, keyPrefix string) error {
 	return nil
 }
 
@@ -41,16 +53,26 @@ func (c *cacherStoreErrorMock) init() {
 	}
 }
 
-func (c *cacherStoreErrorMock) Get(key string) *Query {
+func (c *cacherStoreErrorMock) Get(ctx context.Context, key string) ([]byte, error) {
 	c.init()
 	val, ok := c.store.Load(key)
 	if !ok {
-		return nil
+		return nil, nil
 	}
 
-	return val.(*Query)
+	return val.([]byte), nil
 }
 
-func (c *cacherStoreErrorMock) Store(string, *Query) error {
+func (c *cacherStoreErrorMock) Store(ctx context.Context, key string, val []byte, ttl time.Duration) error {
 	return errors.New("store-error")
+}
+
+func (c *cacherStoreErrorMock) DeleteKey(ctx context.Context, key string) error {
+	c.init()
+	c.store.Delete(key)
+	return nil
+}
+
+func (c *cacherStoreErrorMock) DeleteKeysWithPrefix(ctx context.Context, keyPrefix string) error {
+	return nil
 }
