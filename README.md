@@ -175,21 +175,21 @@ func (c *dummyCacher) Get(ctx context.Context, key string) ([]byte, error) {
 	return val.([]byte), nil
 }
 
-func (c *dummyCacher) Store(ctx context.Context, key string, val []byte, ttl time.Duration) error {
+func (c *dummyCacher) Set(ctx context.Context, key string, val []byte, ttl time.Duration) error {
 	fmt.Println("SET CACHE KEY: ", key)
 	c.init()
 	c.store.Store(key, val)
 	return nil
 }
 
-func (c *dummyCacher) DeleteKey(ctx context.Context, key string) error {
+func (c *dummyCacher) Delete(ctx context.Context, key string) error {
 	fmt.Println("DELETE CACHE KEY: ", key)
 	c.init()
 	c.store.Delete(key)
 	return nil
 }
 
-func (c *dummyCacher) DeleteKeysWithPrefix(ctx context.Context, keyPrefix string) error {
+func (c *dummyCacher) DeleteWithPrefix(ctx context.Context, keyPrefix string) error {
 	fmt.Println("DELETE CACHE PREFIX: ", keyPrefix)
 	c.init()
 	return nil
