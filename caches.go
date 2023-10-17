@@ -73,7 +73,6 @@ func (c *Caches) Query(db *gorm.DB) {
 	if c.checkCache(db, identifier) {
 		return
 	}
-
 	c.ease(db, identifier)
 	if db.Error != nil {
 		return
@@ -92,7 +91,7 @@ func (c *Caches) AfterUpdate(db *gorm.DB) {
 		// evict cache by detail
 		go func() {
 			prefixKey := GenCacheKey(c.Conf.InstanceId, db.Statement.Table, primaryKey)
-			if err := c.Conf.Cacher.DeleteWithPrefix(db.Statement.Context, prefixKey); err != nil {
+			if err := c.Conf.Cacher.DeleteWithPrefix(prefixKey); err != nil {
 				db.Logger.Error(db.Statement.Context, "[AfterUpdate - Delete with key %s] %s", prefixKey, err)
 			}
 		}()
@@ -101,7 +100,7 @@ func (c *Caches) AfterUpdate(db *gorm.DB) {
 	// evict cache by list
 	go func() {
 		prefixKey := GenCacheKey(c.Conf.InstanceId, db.Statement.Table, LIST_KEY)
-		if err := c.Conf.Cacher.DeleteWithPrefix(db.Statement.Context, prefixKey); err != nil {
+		if err := c.Conf.Cacher.DeleteWithPrefix(prefixKey); err != nil {
 			db.Logger.Error(db.Statement.Context, "[AfterUpdate - Delete with prefix %s] %s", prefixKey, err)
 		}
 	}()
@@ -115,7 +114,7 @@ func (c *Caches) AfterCreate(db *gorm.DB) {
 	// evict cache by list
 	go func() {
 		prefixKey := GenCacheKey(c.Conf.InstanceId, db.Statement.Table, LIST_KEY)
-		if err := c.Conf.Cacher.DeleteWithPrefix(db.Statement.Context, prefixKey); err != nil {
+		if err := c.Conf.Cacher.DeleteWithPrefix(prefixKey); err != nil {
 			db.Logger.Error(db.Statement.Context, "[AfterUpdate - Delete with prefix %s] %s", prefixKey, err)
 		}
 	}()
@@ -156,7 +155,7 @@ func (c *Caches) checkCache(db *gorm.DB, identifier string) bool {
 		query Query
 	)
 
-	res, err := c.Conf.Cacher.Get(db.Statement.Context, identifier)
+	res, err := c.Conf.Cacher.Get(identifier)
 	if err != nil || res == nil {
 		return false
 	}
@@ -195,7 +194,7 @@ func (c *Caches) storeInCache(db *gorm.DB, identifier string) {
 		return
 	}
 
-	if err := c.Conf.Cacher.Set(db.Statement.Context, identifier, cachedData, c.Conf.CacheTTL); err != nil {
+	if err := c.Conf.Cacher.Set(identifier, cachedData, c.Conf.CacheTTL); err != nil {
 		db.Logger.Error(db.Statement.Context, "[storeInCache - Store] %s", err)
 	}
 }

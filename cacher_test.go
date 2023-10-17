@@ -1,8 +1,8 @@
 package caches
 
 import (
-	"context"
 	"errors"
+	"fmt"
 	"sync"
 	"time"
 )
@@ -17,29 +17,32 @@ func (c *cacherMock) init() {
 	}
 }
 
-func (c *cacherMock) Get(ctx context.Context, key string) ([]byte, error) {
+func (c *cacherMock) Get(key string) ([]byte, error) {
 	c.init()
+	fmt.Println("START READ CACHE KEY: ", key)
 	val, ok := c.store.Load(key)
 	if !ok {
 		return nil, nil
 	}
+	fmt.Println("READ CACHE KEY: ", key)
 
 	return val.([]byte), nil
 }
 
-func (c *cacherMock) Set(ctx context.Context, key string, val []byte, ttl time.Duration) error {
+func (c *cacherMock) Set(key string, val []byte, ttl time.Duration) error {
 	c.init()
+	fmt.Println("SET CACHE KEY: ", key)
 	c.store.Store(key, val)
 	return nil
 }
 
-func (c *cacherMock) Delete(ctx context.Context, key string) error {
+func (c *cacherMock) Delete(key string) error {
 	c.init()
 	c.store.Delete(key)
 	return nil
 }
 
-func (c *cacherMock) DeleteWithPrefix(ctx context.Context, keyPrefix string) error {
+func (c *cacherMock) DeleteWithPrefix(keyPrefix string) error {
 	return nil
 }
 
@@ -53,7 +56,7 @@ func (c *cacherStoreErrorMock) init() {
 	}
 }
 
-func (c *cacherStoreErrorMock) Get(ctx context.Context, key string) ([]byte, error) {
+func (c *cacherStoreErrorMock) Get(key string) ([]byte, error) {
 	c.init()
 	val, ok := c.store.Load(key)
 	if !ok {
@@ -63,16 +66,16 @@ func (c *cacherStoreErrorMock) Get(ctx context.Context, key string) ([]byte, err
 	return val.([]byte), nil
 }
 
-func (c *cacherStoreErrorMock) Set(ctx context.Context, key string, val []byte, ttl time.Duration) error {
+func (c *cacherStoreErrorMock) Set(key string, val []byte, ttl time.Duration) error {
 	return errors.New("store-error")
 }
 
-func (c *cacherStoreErrorMock) Delete(ctx context.Context, key string) error {
+func (c *cacherStoreErrorMock) Delete(key string) error {
 	c.init()
 	c.store.Delete(key)
 	return nil
 }
 
-func (c *cacherStoreErrorMock) DeleteWithPrefix(ctx context.Context, keyPrefix string) error {
+func (c *cacherStoreErrorMock) DeleteWithPrefix(keyPrefix string) error {
 	return nil
 }

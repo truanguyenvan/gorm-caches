@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -33,7 +32,7 @@ func (c *dummyCacher) init() {
 	}
 }
 
-func (c *dummyCacher) Get(ctx context.Context, key string) ([]byte, error) {
+func (c *dummyCacher) Get(key string) ([]byte, error) {
 	c.init()
 	val, ok := c.store.Load(key)
 	if !ok {
@@ -43,21 +42,21 @@ func (c *dummyCacher) Get(ctx context.Context, key string) ([]byte, error) {
 	return val.([]byte), nil
 }
 
-func (c *dummyCacher) Set(ctx context.Context, key string, val []byte, ttl time.Duration) error {
+func (c *dummyCacher) Set(key string, val []byte, ttl time.Duration) error {
 	fmt.Println("SET CACHE KEY: ", key)
 	c.init()
 	c.store.Store(key, val)
 	return nil
 }
 
-func (c *dummyCacher) Delete(ctx context.Context, key string) error {
+func (c *dummyCacher) Delete(key string) error {
 	fmt.Println("DELETE CACHE KEY: ", key)
 	c.init()
 	c.store.Delete(key)
 	return nil
 }
 
-func (c *dummyCacher) DeleteWithPrefix(ctx context.Context, keyPrefix string) error {
+func (c *dummyCacher) DeleteWithPrefix(keyPrefix string) error {
 	fmt.Println("DELETE CACHE PREFIX: ", keyPrefix)
 	c.init()
 	return nil
