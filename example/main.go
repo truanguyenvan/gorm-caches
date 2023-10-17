@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/truanguyenvan/gorm-caches"
+	"github.com/truanguyenvan/gorm-caches/v2"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
